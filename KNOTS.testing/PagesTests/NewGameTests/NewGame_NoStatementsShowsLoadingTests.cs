@@ -17,7 +17,7 @@ public class NewGame_NoStatementsShowsLoadingTests
     [Fact]
     public void Shows_Loading_When_No_Statements()
     {
-        using var ctx = new TestContext();
+        using var ctx = new BunitContext();
 
         var userMock = new Mock<InterfaceUserService>();
         userMock.Setup(x => x.IsAuthenticated).Returns(true);

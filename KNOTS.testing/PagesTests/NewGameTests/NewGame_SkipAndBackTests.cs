@@ -15,7 +15,7 @@ public class NewGame_SkipAndBackTests
     [Fact]
     public void Skip_Moves_To_Next_Statement()
     {
-        using var ctx = new TestContext();
+        using var ctx = new BunitContext();
 
         var userMock = new Mock<InterfaceUserService>();
         userMock.Setup(x => x.IsAuthenticated).Returns(true);
@@ -44,7 +44,7 @@ public class NewGame_SkipAndBackTests
     [Fact]
     public void Back_Returns_To_Previous_Statement()
     {
-        using var ctx = new TestContext();
+        using var ctx = new BunitContext();
 
         var userMock = new Mock<InterfaceUserService>();
         userMock.Setup(x => x.IsAuthenticated).Returns(true);

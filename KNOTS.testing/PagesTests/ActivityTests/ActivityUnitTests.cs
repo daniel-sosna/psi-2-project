@@ -16,7 +16,7 @@ using KNOTS.Components.Pages;
 using Moq;
 using Xunit;
 
-public class ActivityTests : TestContext
+public class ActivityTests : BunitContext
 {
     [Fact]
     public void LoadGameHistory_ShouldPopulateGameHistory()
@@ -55,7 +55,8 @@ public class ActivityTests : TestContext
     {
         var activity = new Activity();
         var method = typeof(Activity).GetMethod("GetProgressClass", BindingFlags.NonPublic | BindingFlags.Instance);
-        var result = method.Invoke(activity, new object[] { percentage });
+        Assert.NotNull(method);
+        var result = method!.Invoke(activity, new object[] { percentage });
         Assert.Equal(expected, result);
     }
     
@@ -68,7 +69,8 @@ public class ActivityTests : TestContext
     {
         var activity = new Activity();
         var method = typeof(Activity).GetMethod("GetBadgeClass", BindingFlags.NonPublic | BindingFlags.Instance);
-        var result = method.Invoke(activity, new object[] { percentage });
+        Assert.NotNull(method);
+        var result = method!.Invoke(activity, new object[] { percentage });
         Assert.Equal(expected, result);
     }
 }

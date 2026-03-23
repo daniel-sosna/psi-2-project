@@ -37,7 +37,7 @@ namespace KNOTS.Tests.Integration
         }
     }
 
-    public class HomeIntegrationTests : TestContext, IDisposable
+    public class HomeIntegrationTests : BunitContext, IDisposable
     {
         private readonly Mock<InterfaceUserService> _mockUserService;
         private readonly Mock<InterfaceCompatibilityService> _mockCompatibilityService;
@@ -258,7 +258,7 @@ namespace KNOTS.Tests.Integration
         }
 
         [Fact]
-        public async Task Home_Logout_ClearsUserAndNavigatesToLogin()
+        public void Home_Logout_ClearsUserAndNavigatesToLogin()
         {
             // Arrange
             _mockUserService.Setup(x => x.IsAuthenticated).Returns(true);
