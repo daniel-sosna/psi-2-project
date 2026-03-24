@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Bunit;
 using Moq;
 using Xunit;
-using KNOTS.Services.Interfaces;
 using KNOTS.Components.Pages;
 
 
@@ -15,7 +14,7 @@ public class NewGame_AuthRequiredTests
     [Fact]
     public void Shows_Warning_When_Not_Authenticated()
     {
-        using var ctx = new TestContext();
+        using var ctx = new BunitContext();
 
         var userMock = new Mock<InterfaceUserService>();
         userMock.Setup(x => x.IsAuthenticated).Returns(false);

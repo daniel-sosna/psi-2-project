@@ -7,7 +7,7 @@ using KNOTS.Services;
 using KNOTS.Services.Interfaces;
 using Microsoft.JSInterop;
 
-public class GameTestBase : TestContext
+public class GameTestBase : BunitContext
 {
     protected (IRenderedComponent<Game>, Mock<NavigationManager>, Mock<InterfaceUserService>, Mock<InterfaceCompatibilityService>, Mock<IGameRoomService>) SetupGameComponent(
         bool isAuthenticated = true, 

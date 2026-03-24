@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Components.Web;
 
 namespace KNOTS.Tests.Components
 {
-    public class ResultsComponentTests : TestContext
+    public class ResultsComponentTests : BunitContext
     {
         private readonly Mock<InterfaceCompatibilityService> _mockCompatibilityService;
         private readonly Mock<IGameRoomService> _mockGameRoomService;

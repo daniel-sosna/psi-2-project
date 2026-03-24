@@ -484,9 +484,9 @@ $RECYCLE.BIN/
 *.swp
 
 # Local EF Core SQLite database
-knots.db
-knots.db-shm
-knots.db-wal
+knots*.db
+knots*.db-shm
+knots*.db-wal
 
 # Ignore coverage report
 KNOTS.testing/CoverageReport/

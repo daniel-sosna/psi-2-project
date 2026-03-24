@@ -15,7 +15,7 @@ public class NewGame_ProgressTests
     [Fact]
     public void ProgressBar_Updates_When_Advancing()
     {
-        using var ctx = new TestContext();
+        using var ctx = new BunitContext();
 
         var userMock = new Mock<InterfaceUserService>();
         userMock.Setup(x => x.IsAuthenticated).Returns(true);

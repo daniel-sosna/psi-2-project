@@ -7,7 +7,7 @@ using KNOTS.Services.Interfaces;
 using KNOTS.Components.Pages;
 using KNOTS.Services;
 
-public abstract class LoginPageTestsBase : TestContext
+public abstract class LoginPageTestsBase : BunitContext
 {
     protected readonly InterfaceUserService _userServiceMock;
     protected readonly NavigationManager _navManager;

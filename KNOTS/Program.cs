@@ -15,8 +15,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 
 // Database
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=knots.db";
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite("Data Source=knots.db"));
+    options.UseSqlite(connectionString));
 
 // Services
 builder.Services.AddScoped<InterfaceLoggingService, LoggingService>(sp =>
@@ -43,9 +44,9 @@ using (var scope = app.Services.CreateScope())
 
     try
     {
-        dbContext.Database.EnsureCreated();
+        dbContext.Database.Migrate();
         var tableCount = dbContext.Model.GetEntityTypes().Count();
-        Console.WriteLine($"Database created successfully with {tableCount} tables");
+        Console.WriteLine($"Database migrated successfully with {tableCount} tables");
 
         var compatService = scope.ServiceProvider.GetRequiredService<InterfaceCompatibilityService>();
         Console.WriteLine("CompatibilityService initialized successfully");

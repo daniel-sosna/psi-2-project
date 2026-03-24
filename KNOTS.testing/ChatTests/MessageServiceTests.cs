@@ -47,7 +47,7 @@ public class MessageServiceTests {
         Assert.Contains(fakeProxy.SentMessages, m => m.Method == "MessageSent" && m.Args[0] is Message);
     }
     public class FakeClientProxy : IClientProxy {
-        public List<(string Method, object[] Args)> SentMessages { get; } = new();
+        public List<(string Method, object?[] Args)> SentMessages { get; } = new();
         public Task SendCoreAsync(string method, object?[] args, CancellationToken cancellationToken = default) {
             SentMessages.Add((method, args!));
             return Task.CompletedTask;
@@ -153,7 +153,8 @@ public class MessageServiceTests {
         await db.SaveChangesAsync();
         await service.MarkAsRead(msg.Id);
         var updated = await db.Messages.FindAsync(msg.Id);
-        Assert.True(updated.IsRead);
+        Assert.NotNull(updated);
+        Assert.True(updated!.IsRead);
     }
     [Fact] public async Task MarkConversationAsRead_UpdatesAllMessages(){ 
         var service = CreateService(out var db, out var hubMock, out var _);

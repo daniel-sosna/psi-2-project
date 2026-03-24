@@ -11,7 +11,7 @@ using KNOTS.Components.Pages;
 
 namespace TestProject1.PagesTests
 {
-    public class ChatRazorTests : TestContext
+    public class ChatRazorTests : BunitContext
     {
         private readonly Mock<IMessageService> _mockMessageService;
         private readonly Mock<InterfaceUserService> _mockUserService;
@@ -451,7 +451,7 @@ namespace TestProject1.PagesTests
         }
 
         [Fact]
-        public async Task Component_DisposesCorrectly()
+        public void Component_DisposesCorrectly()
         {
             // Arrange
             _mockUserService.SetupGet(x => x.CurrentUser).Returns("testuser");

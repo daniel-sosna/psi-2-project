@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace KNOTS.Tests.Integration
 {
-    public class LeaderboardIntegrationTests : TestContext
+    public class LeaderboardIntegrationTests : BunitContext
     {
         private readonly Mock<InterfaceUserService> _mockUserService;
 
@@ -218,7 +218,7 @@ namespace KNOTS.Tests.Integration
         }
 
         [Fact]
-        public async Task Should_Display_Correct_Table_Headers()
+        public void Should_Display_Correct_Table_Headers()
         {
             // Arrange
             _mockUserService.Setup(s => s.IsAuthenticated).Returns(true);
