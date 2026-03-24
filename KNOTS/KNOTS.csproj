@@ -6,7 +6,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Azure.Core" Version="1.50.0" />
         <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.9">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
