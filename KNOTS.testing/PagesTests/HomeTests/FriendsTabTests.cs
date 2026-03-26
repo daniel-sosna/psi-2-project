@@ -11,7 +11,7 @@ namespace KNOTS.testing.PagesTests.HomeTests;
 public class FriendsTabTests : BunitContext
 {
     private readonly Mock<InterfaceUserService> _mockUserService = new();
-    private readonly Mock<InterfaceFriendService> _mockFriendService = new();
+    private readonly Mock<IFriendService> _mockFriendService = new();
 
     public FriendsTabTests()
     {

@@ -2,7 +2,7 @@ using KNOTS.Models;
 
 namespace KNOTS.Services;
 
-public interface InterfaceFriendService
+public interface IFriendService
 {
     Task<List<FriendSearchResult>> SearchUsersAsync(string currentUsername, string searchTerm, int maxResults = 20);
     Task<(bool Success, string Message)> SendFriendRequestAsync(string senderUsername, string receiverUsername);

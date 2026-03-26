@@ -29,7 +29,7 @@ public class FriendRequestCleanupBackgroundService : BackgroundService
         try
         {
             using var scope = _scopeFactory.CreateScope();
-            var friendService = scope.ServiceProvider.GetRequiredService<InterfaceFriendService>();
+            var friendService = scope.ServiceProvider.GetRequiredService<IFriendService>();
             var deletedCount = await friendService.DeleteExpiredPendingRequestsAsync(cancellationToken);
 
             if (deletedCount > 0)

@@ -35,7 +35,7 @@ public class ServiceRegistrationTest
         services.AddScoped<InterfaceSwipeRepository, SwipeRepository>();
         services.AddScoped<InterfaceCompatibilityCalculator, CompatibilityCalculator>();
         services.AddScoped<InterfaceUserService, UserService>();
-        services.AddScoped<InterfaceFriendService, FriendService>();
+        services.AddScoped<IFriendService, FriendService>();
         services.AddScoped<InterfaceCompatibilityService, CompatibilityService>();
         services.AddSingleton<IGameRoomService, GameRoomService>();
         services.AddScoped<IMessageService, MessageService>();
@@ -49,7 +49,7 @@ public class ServiceRegistrationTest
         Assert.NotNull(provider.GetService<InterfaceSwipeRepository>());
         Assert.NotNull(provider.GetService<InterfaceCompatibilityCalculator>());
         Assert.NotNull(provider.GetService<InterfaceUserService>());
-        Assert.NotNull(provider.GetService<InterfaceFriendService>());
+        Assert.NotNull(provider.GetService<IFriendService>());
         Assert.NotNull(provider.GetService<InterfaceCompatibilityService>());
         Assert.NotNull(provider.GetService<IGameRoomService>());
         Assert.NotNull(provider.GetService<IMessageService>());

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KNOTS.Services;
 
-public class FriendService : InterfaceFriendService
+public class FriendService : IFriendService
 {
     private readonly AppDbContext _context;
     private readonly InterfaceLoggingService _logger;

@@ -42,7 +42,7 @@ namespace KNOTS.Tests.Integration
         private readonly Mock<InterfaceUserService> _mockUserService;
         private readonly Mock<InterfaceCompatibilityService> _mockCompatibilityService;
         private readonly Mock<IMessageService> _mockMessageService;
-        private readonly Mock<InterfaceFriendService> _mockFriendService;
+        private readonly Mock<IFriendService> _mockFriendService;
         private readonly Mock<IJSRuntime> _mockJSRuntime;
         private readonly FakeNavigationManager _navigationManager;
 
@@ -51,7 +51,7 @@ namespace KNOTS.Tests.Integration
             _mockUserService = new Mock<InterfaceUserService>();
             _mockCompatibilityService = new Mock<InterfaceCompatibilityService>();
             _mockMessageService = new Mock<IMessageService>();
-            _mockFriendService = new Mock<InterfaceFriendService>();
+            _mockFriendService = new Mock<IFriendService>();
             _mockJSRuntime = new Mock<IJSRuntime>();
             _navigationManager = new FakeNavigationManager();
 

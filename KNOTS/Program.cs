@@ -26,7 +26,7 @@ builder.Services.AddScoped<InterfaceLoggingService, LoggingService>(sp =>
 builder.Services.AddScoped<InterfaceSwipeRepository, SwipeRepository>();
 builder.Services.AddScoped<InterfaceCompatibilityCalculator, CompatibilityCalculator>();
 builder.Services.AddScoped<InterfaceUserService, UserService>();
-builder.Services.AddScoped<InterfaceFriendService, FriendService>();
+builder.Services.AddScoped<IFriendService, FriendService>();
 builder.Services.AddScoped<InterfaceCompatibilityService, CompatibilityService>();
 builder.Services.AddSingleton<IGameRoomService, GameRoomService>();
 builder.Services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
