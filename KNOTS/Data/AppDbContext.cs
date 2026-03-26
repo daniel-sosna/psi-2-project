@@ -92,13 +92,11 @@ public class AppDbContext : DbContext
             entity.HasKey(e => e.Id);
             entity.Property(e => e.RequesterUsername).IsRequired().HasMaxLength(50);
             entity.Property(e => e.ReceiverUsername).IsRequired().HasMaxLength(50);
-            entity.Property(e => e.PairKey).IsRequired().HasMaxLength(101);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("datetime('now')");
             entity.Property(e => e.Status)
                 .HasConversion<string>()
                 .HasMaxLength(20);
 
-            entity.HasIndex(e => e.PairKey).IsUnique();
             entity.HasIndex(e => new { e.ReceiverUsername, e.Status, e.CreatedAt });
             entity.HasIndex(e => new { e.RequesterUsername, e.Status });
 

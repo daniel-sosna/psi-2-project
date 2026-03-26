@@ -37,13 +37,17 @@ public class FriendService : InterfaceFriendService
             return new List<FriendSearchResult>();
         }
 
-        var pairKeys = matchedUsers
-            .Select(user => BuildPairKey(currentUsername, user.Username))
+        var matchedUsernames = matchedUsers
+            .Select(user => Normalize(user.Username))
             .Distinct()
             .ToList();
 
         var existingRelations = await _context.FriendRequests
-            .Where(request => pairKeys.Contains(request.PairKey))
+            .Where(request =>
+                (request.RequesterUsername.ToLower() == normalizedCurrent &&
+                 matchedUsernames.Contains(request.ReceiverUsername.ToLower())) ||
+                (request.ReceiverUsername.ToLower() == normalizedCurrent &&
+                 matchedUsernames.Contains(request.RequesterUsername.ToLower())))
             .ToListAsync();
 
         return matchedUsers
@@ -91,8 +95,7 @@ public class FriendService : InterfaceFriendService
                 RequesterUsername = sender.Username,
                 ReceiverUsername = receiver.Username,
                 Status = FriendRequestStatus.Pending,
-                CreatedAt = DateTime.UtcNow,
-                PairKey = BuildPairKey(sender.Username, receiver.Username)
+                CreatedAt = DateTime.UtcNow
             };
 
             _context.FriendRequests.Add(friendRequest);
@@ -202,7 +205,7 @@ public class FriendService : InterfaceFriendService
     private FriendSearchResult BuildSearchResult(string currentUsername, string candidateUsername, List<FriendRequest> relations)
     {
         var existing = relations.FirstOrDefault(request =>
-            request.PairKey == BuildPairKey(currentUsername, candidateUsername));
+            IsSameRelationship(request, currentUsername, candidateUsername));
 
         if (existing == null)
         {
@@ -242,15 +245,25 @@ public class FriendService : InterfaceFriendService
 
     private async Task<FriendRequest?> GetRelationshipAsync(string username1, string username2)
     {
-        var pairKey = BuildPairKey(username1, username2);
-        return await _context.FriendRequests.FirstOrDefaultAsync(request => request.PairKey == pairKey);
+        var normalizedUsername1 = Normalize(username1);
+        var normalizedUsername2 = Normalize(username2);
+
+        return await _context.FriendRequests.FirstOrDefaultAsync(request =>
+            (request.RequesterUsername.ToLower() == normalizedUsername1 &&
+             request.ReceiverUsername.ToLower() == normalizedUsername2) ||
+            (request.RequesterUsername.ToLower() == normalizedUsername2 &&
+             request.ReceiverUsername.ToLower() == normalizedUsername1));
     }
 
-    private static string BuildPairKey(string username1, string username2)
+    private static bool IsSameRelationship(FriendRequest request, string username1, string username2)
     {
-        var pair = new[] { Normalize(username1), Normalize(username2) };
-        Array.Sort(pair, StringComparer.Ordinal);
-        return string.Join("|", pair);
+        var normalizedUsername1 = Normalize(username1);
+        var normalizedUsername2 = Normalize(username2);
+
+        return (Normalize(request.RequesterUsername) == normalizedUsername1 &&
+                Normalize(request.ReceiverUsername) == normalizedUsername2) ||
+               (Normalize(request.RequesterUsername) == normalizedUsername2 &&
+                Normalize(request.ReceiverUsername) == normalizedUsername1);
     }
 
     private static string Normalize(string? value) => (value ?? string.Empty).Trim().ToLowerInvariant();

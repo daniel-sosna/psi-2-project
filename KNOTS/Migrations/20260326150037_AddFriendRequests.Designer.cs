@@ -30,12 +30,6 @@ namespace KNOTS.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT")
                         .HasDefaultValueSql("datetime('now')");
-
-                    b.Property<string>("PairKey")
-                        .IsRequired()
-                        .HasMaxLength(101)
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("ReceiverUsername")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -52,10 +46,6 @@ namespace KNOTS.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PairKey")
-                        .IsUnique();
-
                     b.HasIndex("RequesterUsername", "Status");
 
                     b.HasIndex("ReceiverUsername", "Status", "CreatedAt");

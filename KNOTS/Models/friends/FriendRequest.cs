@@ -7,5 +7,4 @@ public class FriendRequest
     public string ReceiverUsername { get; set; } = string.Empty;
     public FriendRequestStatus Status { get; set; } = FriendRequestStatus.Pending;
     public DateTime CreatedAt { get; set; }
-    public string PairKey { get; set; } = string.Empty;
 }

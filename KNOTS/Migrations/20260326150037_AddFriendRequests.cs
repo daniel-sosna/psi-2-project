@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -20,8 +20,7 @@ namespace KNOTS.Migrations
                     RequesterUsername = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
                     ReceiverUsername = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
                     Status = table.Column<string>(type: "TEXT", maxLength: 20, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "datetime('now')"),
-                    PairKey = table.Column<string>(type: "TEXT", maxLength: 101, nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "datetime('now')")
                 },
                 constraints: table =>
                 {
@@ -40,12 +39,6 @@ namespace KNOTS.Migrations
                         principalColumn: "Username",
                         onDelete: ReferentialAction.Cascade);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_friend_request_PairKey",
-                table: "friend_request",
-                column: "PairKey",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_friend_request_ReceiverUsername_Status_CreatedAt",

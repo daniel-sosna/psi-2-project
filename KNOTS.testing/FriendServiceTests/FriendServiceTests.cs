@@ -122,7 +122,6 @@ public class FriendServiceTests : IDisposable
             {
                 RequesterUsername = "Alice",
                 ReceiverUsername = "Bob",
-                PairKey = "alice|bob",
                 Status = FriendRequestStatus.Pending,
                 CreatedAt = DateTime.UtcNow.AddDays(-8)
             },
@@ -130,7 +129,6 @@ public class FriendServiceTests : IDisposable
             {
                 RequesterUsername = "Alice",
                 ReceiverUsername = "Cara",
-                PairKey = "alice|cara",
                 Status = FriendRequestStatus.Pending,
                 CreatedAt = DateTime.UtcNow.AddDays(-2)
             },
@@ -138,7 +136,6 @@ public class FriendServiceTests : IDisposable
             {
                 RequesterUsername = "Bob",
                 ReceiverUsername = "Cara",
-                PairKey = "bob|cara",
                 Status = FriendRequestStatus.Accepted,
                 CreatedAt = DateTime.UtcNow.AddDays(-20)
             });
@@ -148,7 +145,8 @@ public class FriendServiceTests : IDisposable
 
         Assert.Equal(1, deletedCount);
         Assert.Equal(2, Context.FriendRequests.Count());
-        Assert.DoesNotContain(Context.FriendRequests, request => request.PairKey == "alice|bob");
+        Assert.DoesNotContain(Context.FriendRequests, request =>
+            request.RequesterUsername == "Alice" && request.ReceiverUsername == "Bob");
     }
 
     [Fact]
