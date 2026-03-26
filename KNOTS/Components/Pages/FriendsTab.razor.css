@@ -1,0 +1,147 @@
+.friends-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.friends-search-card,
+.friends-column-card {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 24px;
+    padding: 1.25rem;
+    backdrop-filter: blur(18px);
+}
+
+.friends-columns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.friends-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.friends-title,
+.friends-column-card h3 {
+    margin: 0;
+    color: #fff7e8;
+}
+
+.friends-subtitle,
+.friend-status,
+.friends-empty-state span {
+    color: rgba(255, 247, 232, 0.72);
+}
+
+.friends-search-row {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.friends-search-input {
+    flex: 1;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 999px;
+    background: rgba(17, 24, 39, 0.42);
+    color: #fff;
+    padding: 0.85rem 1rem;
+}
+
+.friends-search-button,
+.friend-action-button {
+    border: none;
+    border-radius: 999px;
+    padding: 0.8rem 1.1rem;
+    background: linear-gradient(135deg, #ffb26f, #ff7a59);
+    color: #1f1b2d;
+    font-weight: 700;
+}
+
+.friend-action-button.accept {
+    background: linear-gradient(135deg, #8be28b, #47c46a);
+}
+
+.friend-action-button.decline {
+    background: linear-gradient(135deg, #ffd1c7, #ff8f7a);
+}
+
+.friend-request-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.friends-results-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.friend-result-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.9rem 1rem;
+    border-radius: 18px;
+    background: rgba(12, 18, 32, 0.34);
+}
+
+.friend-username {
+    color: #fff;
+    font-weight: 700;
+}
+
+.friend-state-pill,
+.friends-count {
+    border-radius: 999px;
+    padding: 0.35rem 0.75rem;
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff7e8;
+    font-size: 0.85rem;
+}
+
+.friends-feedback {
+    margin-bottom: 1rem;
+    border-radius: 16px;
+    padding: 0.85rem 1rem;
+    font-weight: 600;
+}
+
+.friends-feedback.success {
+    background: rgba(71, 196, 106, 0.18);
+    color: #d5ffd8;
+}
+
+.friends-feedback.error {
+    background: rgba(255, 143, 122, 0.18);
+    color: #ffe0d8;
+}
+
+.friends-empty-state {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 1rem;
+    border-radius: 18px;
+    background: rgba(12, 18, 32, 0.28);
+    color: #fff;
+}
+
+@media (max-width: 900px) {
+    .friends-columns {
+        grid-template-columns: 1fr;
+    }
+
+    .friends-search-row,
+    .friend-result-card,
+    .friend-request-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}

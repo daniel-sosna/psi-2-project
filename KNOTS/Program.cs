@@ -26,6 +26,7 @@ builder.Services.AddScoped<InterfaceLoggingService, LoggingService>(sp =>
 builder.Services.AddScoped<InterfaceSwipeRepository, SwipeRepository>();
 builder.Services.AddScoped<InterfaceCompatibilityCalculator, CompatibilityCalculator>();
 builder.Services.AddScoped<InterfaceUserService, UserService>();
+builder.Services.AddScoped<InterfaceFriendService, FriendService>();
 builder.Services.AddScoped<InterfaceCompatibilityService, CompatibilityService>();
 builder.Services.AddSingleton<IGameRoomService, GameRoomService>();
 builder.Services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
@@ -34,6 +35,7 @@ builder.Services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
 // SignalR
 builder.Services.AddSignalR();
 builder.Services.AddScoped<IMessageService, MessageService>();
+builder.Services.AddHostedService<FriendRequestCleanupBackgroundService>();
 
 var app = builder.Build();
 
@@ -75,4 +77,3 @@ app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 app.MapHub<GameHub>("/gamehub");
 app.MapHub<ChatHub>("/chathub");
 app.Run();
-

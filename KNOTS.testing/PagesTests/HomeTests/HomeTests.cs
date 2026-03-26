@@ -42,6 +42,7 @@ namespace KNOTS.Tests.Integration
         private readonly Mock<InterfaceUserService> _mockUserService;
         private readonly Mock<InterfaceCompatibilityService> _mockCompatibilityService;
         private readonly Mock<IMessageService> _mockMessageService;
+        private readonly Mock<InterfaceFriendService> _mockFriendService;
         private readonly Mock<IJSRuntime> _mockJSRuntime;
         private readonly FakeNavigationManager _navigationManager;
 
@@ -50,14 +51,23 @@ namespace KNOTS.Tests.Integration
             _mockUserService = new Mock<InterfaceUserService>();
             _mockCompatibilityService = new Mock<InterfaceCompatibilityService>();
             _mockMessageService = new Mock<IMessageService>();
+            _mockFriendService = new Mock<InterfaceFriendService>();
             _mockJSRuntime = new Mock<IJSRuntime>();
             _navigationManager = new FakeNavigationManager();
 
             Services.AddSingleton(_mockUserService.Object);
             Services.AddSingleton(_mockCompatibilityService.Object);
             Services.AddSingleton(_mockMessageService.Object);
+            Services.AddSingleton(_mockFriendService.Object);
             Services.AddSingleton(_mockJSRuntime.Object);
             Services.AddSingleton<NavigationManager>(_navigationManager);
+
+            _mockFriendService.Setup(x => x.GetIncomingRequestsAsync(It.IsAny<string>()))
+                .ReturnsAsync(new List<FriendRequest>());
+            _mockFriendService.Setup(x => x.GetFriendsAsync(It.IsAny<string>()))
+                .ReturnsAsync(new List<User>());
+            _mockFriendService.Setup(x => x.SearchUsersAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>()))
+                .ReturnsAsync(new List<FriendSearchResult>());
         }
 
         [Fact]
@@ -109,6 +119,21 @@ namespace KNOTS.Tests.Integration
             Assert.Contains("Home", navLinks[0].TextContent);
             Assert.Contains("My Activity", navLinks[1].TextContent);
             Assert.Contains("Top Knotters", navLinks[2].TextContent);
+        }
+
+        [Fact]
+        public void Home_ShowsFriendsTabToggle()
+        {
+            _mockUserService.Setup(x => x.IsAuthenticated).Returns(true);
+            _mockUserService.Setup(x => x.CurrentUser).Returns("TestUser");
+            SetupEmptyConversations();
+
+            var cut = Render<Home>();
+
+            var tabButtons = cut.FindAll(".home-tab-button");
+            Assert.Equal(2, tabButtons.Count);
+            Assert.Contains("Messages", tabButtons[0].TextContent);
+            Assert.Contains("Friends", tabButtons[1].TextContent);
         }
 
         [Fact]
