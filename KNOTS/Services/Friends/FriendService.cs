@@ -27,7 +27,7 @@ public class FriendService : InterfaceFriendService
         }
 
         var matchedUsers = await _context.Users
-            .Where(u => u.Username.ToLower().Contains(term) && u.Username.ToLower() != normalizedCurrent)
+            .Where(u => u.Username.ToLower() == term && u.Username.ToLower() != normalizedCurrent)
             .OrderBy(u => u.Username)
             .Take(Math.Max(1, maxResults))
             .ToListAsync();
