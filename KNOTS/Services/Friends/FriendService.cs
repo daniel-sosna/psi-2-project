@@ -210,7 +210,7 @@ public class FriendService : InterfaceFriendService
             {
                 Username = candidateUsername,
                 CanSendRequest = true,
-                StatusLabel = "Ready to connect"
+                StatusLabel = "Add friend"
             };
         }
 

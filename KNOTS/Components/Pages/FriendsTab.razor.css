@@ -6,11 +6,11 @@
 
 .friends-search-card,
 .friends-column-card {
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: #f8fafc;
+    border: 1px solid #d7dee8;
     border-radius: 24px;
     padding: 1.25rem;
-    backdrop-filter: blur(18px);
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
 }
 
 .friends-columns {
@@ -30,13 +30,13 @@
 .friends-title,
 .friends-column-card h3 {
     margin: 0;
-    color: #fff7e8;
+    color: #172033;
 }
 
 .friends-subtitle,
 .friend-status,
 .friends-empty-state span {
-    color: rgba(255, 247, 232, 0.72);
+    color: #5b667a;
 }
 
 .friends-search-row {
@@ -46,11 +46,21 @@
 
 .friends-search-input {
     flex: 1;
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    border: 1px solid #c8d3e1;
     border-radius: 999px;
-    background: rgba(17, 24, 39, 0.42);
-    color: #fff;
+    background: #ffffff;
+    color: #172033;
     padding: 0.85rem 1rem;
+}
+
+.friends-search-input::placeholder {
+    color: #7b8799;
+}
+
+.friends-search-input:focus {
+    outline: none;
+    border-color: #ff8f6b;
+    box-shadow: 0 0 0 4px rgba(255, 143, 107, 0.18);
 }
 
 .friends-search-button,
@@ -83,17 +93,20 @@
 }
 
 .friend-result-card {
+    margin-top: 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 1rem;
     padding: 0.9rem 1rem;
     border-radius: 18px;
-    background: rgba(12, 18, 32, 0.34);
+    background: #ffffff;
+    border: 1px solid #dde5ef;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
 }
 
 .friend-username {
-    color: #fff;
+    color: #172033;
     font-weight: 700;
 }
 
@@ -101,9 +114,10 @@
 .friends-count {
     border-radius: 999px;
     padding: 0.35rem 0.75rem;
-    background: rgba(255, 255, 255, 0.12);
-    color: #fff7e8;
+    background: #e9eef5;
+    color: #324055;
     font-size: 0.85rem;
+    font-weight: 700;
 }
 
 .friends-feedback {
@@ -114,23 +128,25 @@
 }
 
 .friends-feedback.success {
-    background: rgba(71, 196, 106, 0.18);
-    color: #d5ffd8;
+    background: #e8f8ec;
+    color: #1f6a35;
 }
 
 .friends-feedback.error {
-    background: rgba(255, 143, 122, 0.18);
-    color: #ffe0d8;
+    background: #fff0eb;
+    color: #9d3b1f;
 }
 
 .friends-empty-state {
+    margin-top: 10px;
     display: flex;
     flex-direction: column;
     gap: 0.35rem;
     padding: 1rem;
     border-radius: 18px;
-    background: rgba(12, 18, 32, 0.28);
-    color: #fff;
+    background: #f1f5f9;
+    border: 1px dashed #cdd7e4;
+    color: #172033;
 }
 
 @media (max-width: 900px) {
