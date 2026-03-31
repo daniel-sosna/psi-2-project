@@ -1,0 +1,163 @@
+.friends-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.friends-search-card,
+.friends-column-card {
+    background: #f8fafc;
+    border: 1px solid #d7dee8;
+    border-radius: 24px;
+    padding: 1.25rem;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+}
+
+.friends-columns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.friends-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.friends-title,
+.friends-column-card h3 {
+    margin: 0;
+    color: #172033;
+}
+
+.friends-subtitle,
+.friend-status,
+.friends-empty-state span {
+    color: #5b667a;
+}
+
+.friends-search-row {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.friends-search-input {
+    flex: 1;
+    border: 1px solid #c8d3e1;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #172033;
+    padding: 0.85rem 1rem;
+}
+
+.friends-search-input::placeholder {
+    color: #7b8799;
+}
+
+.friends-search-input:focus {
+    outline: none;
+    border-color: #ff8f6b;
+    box-shadow: 0 0 0 4px rgba(255, 143, 107, 0.18);
+}
+
+.friends-search-button,
+.friend-action-button {
+    border: none;
+    border-radius: 999px;
+    padding: 0.8rem 1.1rem;
+    background: linear-gradient(135deg, #ffb26f, #ff7a59);
+    color: #1f1b2d;
+    font-weight: 700;
+}
+
+.friend-action-button.accept {
+    background: linear-gradient(135deg, #8be28b, #47c46a);
+}
+
+.friend-action-button.decline {
+    background: linear-gradient(135deg, #ffd1c7, #ff8f7a);
+}
+
+.friend-request-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.friends-results-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.friend-result-card {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.9rem 1rem;
+    border-radius: 18px;
+    background: #ffffff;
+    border: 1px solid #dde5ef;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+}
+
+.friend-username {
+    color: #172033;
+    font-weight: 700;
+}
+
+.friend-state-pill,
+.friends-count {
+    border-radius: 999px;
+    padding: 0.35rem 0.75rem;
+    background: #e9eef5;
+    color: #324055;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.friends-feedback {
+    margin-bottom: 1rem;
+    border-radius: 16px;
+    padding: 0.85rem 1rem;
+    font-weight: 600;
+}
+
+.friends-feedback.success {
+    background: #e8f8ec;
+    color: #1f6a35;
+}
+
+.friends-feedback.error {
+    background: #fff0eb;
+    color: #9d3b1f;
+}
+
+.friends-empty-state {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 1rem;
+    border-radius: 18px;
+    background: #f1f5f9;
+    border: 1px dashed #cdd7e4;
+    color: #172033;
+}
+
+@media (max-width: 900px) {
+    .friends-columns {
+        grid-template-columns: 1fr;
+    }
+
+    .friends-search-row,
+    .friend-result-card,
+    .friend-request-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}

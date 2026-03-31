@@ -135,102 +135,123 @@
                 <div class="chat-section glass-card">
                     <div class="card-shine"></div>
 
-                    <div class="chat-header">
-                        <div class="chat-header-left">
-                            <div class="section-icon">💬</div>
-                            <div>
-                                <h2 class="section-title">Messages</h2>
-                                <p class="chat-subtitle">Reconnect with your matches</p>
-                            </div>
-                        </div>
-                        @if (unreadCount > 0)
-                        {
-                            <span class="unread-badge">@unreadCount new</span>
-                        }
+                    <div class="home-tab-switcher">
+                        <button class="home-tab-button @(activeTab == HomeTab.Messages ? "active" : "")"
+                                @onclick="() => activeTab = HomeTab.Messages">
+                            Messages
+                            @if (unreadCount > 0)
+                            {
+                                <span class="home-tab-badge">@unreadCount</span>
+                            }
+                        </button>
+                        <button class="home-tab-button @(activeTab == HomeTab.Friends ? "active" : "")"
+                                @onclick="() => activeTab = HomeTab.Friends">
+                            Friends
+                        </button>
                     </div>
 
-                    @if (latestNotification != null)
+                    @if (activeTab == HomeTab.Messages)
                     {
-                        <div class="chat-notification">
-                            <div class="notification-glow"></div>
-                            <div class="notification-content">
-                                <div class="notification-title">New message</div>
-                                <div class="notification-body">
-                                    <strong>@latestNotification.Username</strong>: @latestNotification.Preview
+                        <div class="chat-header">
+                            <div class="chat-header-left">
+                                <div class="section-icon">💬</div>
+                                <div>
+                                    <h2 class="section-title">Messages</h2>
+                                    <p class="chat-subtitle">Reconnect with your matches</p>
                                 </div>
                             </div>
-                            <div class="notification-actions">
-                                <button class="btn-open-chat" @onclick="() => OpenChat(latestNotification.Username)">
-                                    <span>Open</span>
-                                    <div class="btn-shimmer"></div>
-                                </button>
-                                <button class="btn-dismiss" @onclick="DismissNotification">×</button>
-                            </div>
+                            @if (unreadCount > 0)
+                            {
+                                <span class="unread-badge">@unreadCount new</span>
+                            }
                         </div>
-                    }
 
-                    @if (chatLoading)
-                    {
-                        <div class="chat-loading">
-                            <div class="loading-spinner"></div>
-                            <p>Loading your chats...</p>
-                        </div>
-                    }
-                    else if (!string.IsNullOrWhiteSpace(chatError))
-                    {
-                        <div class="chat-error">@chatError</div>
-                    }
-                    else if (contactSummaries.Count == 0)
-                    {
-                        <div class="chat-empty">
-                            <div class="empty-icon">📭</div>
-                            <h3>No chats yet</h3>
-                            <p>Play a game to meet new players and start messaging!</p>
-                            <a href="/game" class="btn-find-match">
-                                <span>Find a Match</span>
-                                <div class="btn-shimmer"></div>
-                            </a>
-                        </div>
+                        @if (latestNotification != null)
+                        {
+                            <div class="chat-notification">
+                                <div class="notification-glow"></div>
+                                <div class="notification-content">
+                                    <div class="notification-title">New message</div>
+                                    <div class="notification-body">
+                                        <strong>@latestNotification.Username</strong>: @latestNotification.Preview
+                                    </div>
+                                </div>
+                                <div class="notification-actions">
+                                    <button class="btn-open-chat" @onclick="() => OpenChat(latestNotification.Username)">
+                                        <span>Open</span>
+                                        <div class="btn-shimmer"></div>
+                                    </button>
+                                    <button class="btn-dismiss" @onclick="DismissNotification">×</button>
+                                </div>
+                            </div>
+                        }
+
+                        @if (chatLoading)
+                        {
+                            <div class="chat-loading">
+                                <div class="loading-spinner"></div>
+                                <p>Loading your chats...</p>
+                            </div>
+                        }
+                        else if (!string.IsNullOrWhiteSpace(chatError))
+                        {
+                            <div class="chat-error">@chatError</div>
+                        }
+                        else if (contactSummaries.Count == 0)
+                        {
+                            <div class="chat-empty">
+                                <div class="empty-icon">📭</div>
+                                <h3>No chats yet</h3>
+                                <p>Play a game to meet new players and start messaging!</p>
+                                <a href="/game" class="btn-find-match">
+                                    <span>Find a Match</span>
+                                    <div class="btn-shimmer"></div>
+                                </a>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="chat-list">
+                                @foreach (var contact in contactSummaries)
+                                {
+                                    <div class="chat-card @(contact.HasUnread ? "unread" : "")">
+                                        <div class="chat-card-glow"></div>
+                                        <div class="chat-card-content">
+                                            <div class="chat-card-header">
+                                                <div class="chat-info">
+                                                    <div class="chat-name">@contact.Username</div>
+                                                    @if (contact.Compatibility.HasValue)
+                                                    {
+                                                        <span class="compat-badge">
+                                                            @contact.Compatibility.Value.ToString("F0")% match
+                                                        </span>
+                                                    }
+                                                </div>
+                                                <div class="chat-meta">
+                                                    @if (contact.LastMessageAt.HasValue)
+                                                    {
+                                                        <span class="timestamp">@contact.LastMessageAt.Value.ToLocalTime().ToString("MMM dd, HH:mm")</span>
+                                                    }
+                                                    @if (contact.HasUnread)
+                                                    {
+                                                        <span class="new-badge">New</span>
+                                                    }
+                                                </div>
+                                            </div>
+                                            <div class="chat-preview">@contact.LastMessagePreview</div>
+                                            <button class="btn-open-chat-card" @onclick="() => OpenChat(contact.Username)">
+                                                <span>Open Chat</span>
+                                                <div class="btn-shimmer"></div>
+                                            </button>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
                     }
                     else
                     {
-                        <div class="chat-list">
-                            @foreach (var contact in contactSummaries)
-                            {
-                                <div class="chat-card @(contact.HasUnread ? "unread" : "")">
-                                    <div class="chat-card-glow"></div>
-                                    <div class="chat-card-content">
-                                        <div class="chat-card-header">
-                                            <div class="chat-info">
-                                                <div class="chat-name">@contact.Username</div>
-                                                @if (contact.Compatibility.HasValue)
-                                                {
-                                                    <span class="compat-badge">
-                                                        @contact.Compatibility.Value.ToString("F0")% match
-                                                    </span>
-                                                }
-                                            </div>
-                                            <div class="chat-meta">
-                                                @if (contact.LastMessageAt.HasValue)
-                                                {
-                                                    <span
-                                                        class="timestamp">@contact.LastMessageAt.Value.ToLocalTime().ToString("MMM dd, HH:mm")</span>
-                                                }
-                                                @if (contact.HasUnread)
-                                                {
-                                                    <span class="new-badge">New</span>
-                                                }
-                                            </div>
-                                        </div>
-                                        <div class="chat-preview">@contact.LastMessagePreview</div>
-                                        <button class="btn-open-chat-card" @onclick="() => OpenChat(contact.Username)">
-                                            <span>Open Chat</span>
-                                            <div class="btn-shimmer"></div>
-                                        </button>
-                                    </div>
-                                </div>
-                            }
-                        </div>
+                        <FriendsTab />
                     }
                 </div>
             </div>
@@ -570,6 +591,46 @@
     .nav-links {
         display: flex;
         gap: 1rem;
+    }
+
+    .home-tab-switcher {
+        display: inline-flex;
+        gap: 0.75rem;
+        padding: 0.4rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        margin-bottom: 1.5rem;
+    }
+
+    .home-tab-button {
+        border: none;
+        border-radius: 999px;
+        padding: 0.75rem 1.1rem;
+        background: transparent;
+        color: rgba(163, 159, 153, 0.72);
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.25s ease;
+    }
+
+    .home-tab-button.active {
+        background: linear-gradient(135deg, rgba(255, 178, 111, 0.95), rgba(255, 122, 89, 0.92));
+        color: #271f33;
+        box-shadow: 0 14px 26px rgba(255, 122, 89, 0.28);
+    }
+
+    .home-tab-badge {
+        min-width: 1.5rem;
+        height: 1.5rem;
+        border-radius: 999px;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0 0.35rem;
+        background: rgba(39, 31, 51, 0.16);
+        font-size: 0.8rem;
     }
 
     .nav-link {
@@ -1340,6 +1401,7 @@
 
 
 @code {
+    private HomeTab activeTab = HomeTab.Messages;
     private string statusMessage = "";
     private string friendMessage = "";
 
@@ -1712,4 +1774,10 @@
     private record CompatibilitySnapshot(string Username, double Score);
 
     private record IncomingChatNotification(string Username, string Preview);
+
+    private enum HomeTab
+    {
+        Messages,
+        Friends
+    }
 }

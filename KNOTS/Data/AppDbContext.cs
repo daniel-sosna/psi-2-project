@@ -15,6 +15,7 @@ public class AppDbContext : DbContext
     public DbSet<PlayerSwipeRecord> PlayerSwipes { get; set; }
     public DbSet<GameHistoryRecord> GameHistory { get; set; }
     public DbSet<Message> Messages { get; set; }
+    public DbSet<FriendRequest> FriendRequests { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder) 
     {
@@ -78,6 +79,38 @@ public class AppDbContext : DbContext
             
             entity.HasIndex(e => new { e.SenderId, e.ReceiverId });
             entity.HasIndex(e => e.SentAt);
+        });
+
+        // FriendRequest configuration
+        modelBuilder.Entity<FriendRequest>(entity =>
+        {
+            entity.ToTable("friend_request", tableBuilder =>
+            {
+                tableBuilder.HasCheckConstraint("CK_friend_request_RequesterNotReceiver",
+                    "lower(RequesterUsername) <> lower(ReceiverUsername)");
+            });
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.RequesterUsername).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.ReceiverUsername).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("datetime('now')");
+            entity.Property(e => e.Status)
+                .HasConversion<string>()
+                .HasMaxLength(20);
+
+            entity.HasIndex(e => new { e.ReceiverUsername, e.Status, e.CreatedAt });
+            entity.HasIndex(e => new { e.RequesterUsername, e.Status });
+
+            entity.HasOne<User>()
+                .WithMany()
+                .HasForeignKey(e => e.RequesterUsername)
+                .HasPrincipalKey(u => u.Username)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne<User>()
+                .WithMany()
+                .HasForeignKey(e => e.ReceiverUsername)
+                .HasPrincipalKey(u => u.Username)
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

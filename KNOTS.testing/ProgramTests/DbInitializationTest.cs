@@ -1,4 +1,5 @@
 using KNOTS.Data;
+using KNOTS.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace TestProject1.ProgramTests;
@@ -13,5 +14,6 @@ public class DbInitializationTest {
         context.Database.EnsureCreated();
         var tableCount = context.Model.GetEntityTypes().Count();
         Assert.True(tableCount > 0);
+        Assert.NotNull(context.Model.FindEntityType(typeof(FriendRequest)));
     }
 }

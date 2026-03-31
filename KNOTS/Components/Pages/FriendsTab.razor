@@ -1,0 +1,196 @@
+@using KNOTS.Models
+@using KNOTS.Services
+@inject InterfaceUserService UserService
+@inject IFriendService FriendService
+
+<div class="friends-panel">
+    <div class="friends-search-card">
+        <div class="friends-section-header">
+            <div>
+                <h2 class="friends-title">Friends</h2>
+                <p class="friends-subtitle">Search by username and grow your circle.</p>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(feedbackMessage))
+        {
+            <div class="friends-feedback @(feedbackIsSuccess ? "success" : "error")">
+                @feedbackMessage
+            </div>
+        }
+
+        <div class="friends-search-row">
+            <input class="friends-search-input"
+                   @bind="searchTerm"
+                   @bind:event="oninput"
+                   @onkeydown="HandleSearchKeyDown"
+                   placeholder="Search usernames" />
+            <button class="friends-search-button" @onclick="SearchUsersAsync">Search</button>
+        </div>
+
+        @if (searchPerformed && searchResults.Count == 0)
+        {
+            <div class="friends-empty-state">
+                <strong>No matches yet.</strong>
+                <span>Try another username.</span>
+            </div>
+        }
+        else if (searchResults.Count > 0)
+        {
+            <div class="friends-results-list">
+                @foreach (var result in searchResults)
+                {
+                    <div class="friend-result-card">
+                        <div>
+                            <div class="friend-username">@result.Username</div>
+                            <div class="friend-status">@result.StatusLabel</div>
+                        </div>
+
+                        @if (result.CanSendRequest)
+                        {
+                            <button class="friend-action-button" @onclick="() => SendRequestAsync(result.Username)">
+                                Send Request
+                            </button>
+                        }
+                        else
+                        {
+                            <span class="friend-state-pill">@result.StatusLabel</span>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="friends-columns">
+        <section class="friends-column-card">
+            <div class="friends-section-header">
+                <h3>Incoming Requests</h3>
+                <span class="friends-count">@incomingRequests.Count</span>
+            </div>
+
+            @if (incomingRequests.Count == 0)
+            {
+                <div class="friends-empty-state">
+                    <strong>No pending requests.</strong>
+                    <span>New requests will show up here.</span>
+                </div>
+            }
+            else
+            {
+                <div class="friends-results-list">
+                    @foreach (var request in incomingRequests)
+                    {
+                        <div class="friend-result-card">
+                            <div>
+                                <div class="friend-username">@request.RequesterUsername</div>
+                                <div class="friend-status">Sent @request.CreatedAt.ToLocalTime().ToString("MMM dd")</div>
+                            </div>
+                            <div class="friend-request-actions">
+                                <button class="friend-action-button accept" @onclick="() => AcceptRequestAsync(request.Id)">Accept</button>
+                                <button class="friend-action-button decline" @onclick="() => DeclineRequestAsync(request.Id)">Decline</button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </section>
+
+        <section class="friends-column-card">
+            <div class="friends-section-header">
+                <h3>Your Friends</h3>
+                <span class="friends-count">@friends.Count</span>
+            </div>
+
+            @if (friends.Count == 0)
+            {
+                <div class="friends-empty-state">
+                    <strong>No friends yet.</strong>
+                    <span>Search for someone to get started.</span>
+                </div>
+            }
+            else
+            {
+                <div class="friends-results-list">
+                    @foreach (var friend in friends)
+                    {
+                        <div class="friend-result-card">
+                            <div>
+                                <div class="friend-username">@friend.Username</div>
+                            </div>
+                            <span class="friend-state-pill">Friend</span>
+                        </div>
+                    }
+                </div>
+            }
+        </section>
+    </div>
+</div>
+
+@code {
+    private string searchTerm = string.Empty;
+    private bool searchPerformed;
+    private bool feedbackIsSuccess;
+    private string feedbackMessage = string.Empty;
+    private List<FriendSearchResult> searchResults = new();
+    private List<FriendRequest> incomingRequests = new();
+    private List<User> friends = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (UserService.IsAuthenticated)
+        {
+            await ReloadListsAsync();
+        }
+    }
+
+    private async Task SearchUsersAsync()
+    {
+        searchPerformed = true;
+        feedbackMessage = string.Empty;
+        searchResults = await FriendService.SearchUsersAsync(UserService.CurrentUser ?? string.Empty, searchTerm);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task SendRequestAsync(string username)
+    {
+        var result = await FriendService.SendFriendRequestAsync(UserService.CurrentUser ?? string.Empty, username);
+        feedbackIsSuccess = result.Success;
+        feedbackMessage = result.Message;
+        await ReloadListsAsync();
+        await SearchUsersAsync();
+    }
+
+    private async Task AcceptRequestAsync(int requestId)
+    {
+        var result = await FriendService.AcceptRequestAsync(requestId, UserService.CurrentUser ?? string.Empty);
+        feedbackIsSuccess = result.Success;
+        feedbackMessage = result.Message;
+        await ReloadListsAsync();
+        await SearchUsersAsync();
+    }
+
+    private async Task DeclineRequestAsync(int requestId)
+    {
+        var result = await FriendService.DeclineRequestAsync(requestId, UserService.CurrentUser ?? string.Empty);
+        feedbackIsSuccess = result.Success;
+        feedbackMessage = result.Message;
+        await ReloadListsAsync();
+        await SearchUsersAsync();
+    }
+
+    private async Task ReloadListsAsync()
+    {
+        var currentUser = UserService.CurrentUser ?? string.Empty;
+        incomingRequests = await FriendService.GetIncomingRequestsAsync(currentUser);
+        friends = await FriendService.GetFriendsAsync(currentUser);
+    }
+
+    private async Task HandleSearchKeyDown(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter")
+        {
+            await SearchUsersAsync();
+        }
+    }
+}
