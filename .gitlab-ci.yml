@@ -38,7 +38,7 @@ build:
   stage: build
   needs: ["restore"]
   script:
-    - dotnet build KNOTS.sln -c "$CONFIGURATION" --no-restore
+    - dotnet build KNOTS.sln -c "$CONFIGURATION"
 
 # ---------- TEST ----------
 
