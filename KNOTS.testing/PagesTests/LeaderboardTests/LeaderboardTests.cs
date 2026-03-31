@@ -298,7 +298,7 @@ namespace KNOTS.Tests.Integration
 
             // Assert
             var compatibilityScore = cut.Find(".compatibility-score");
-            Assert.Equal("85,7%", compatibilityScore.TextContent);
+            Assert.Equal("85.7%", compatibilityScore.TextContent);
         }
 
         [Fact]
