@@ -1,4 +1,5 @@
 stages:
+  - notify_start
   - restore
   - build
   - test
@@ -74,6 +75,20 @@ deploy:
 
 # ---------- GITHUB STATUS (PR INTEGRATION) ----------
 
+notify_pending:
+  stage: notify_start
+  script:
+    - |
+      curl -s -X POST \
+      -H "Authorization: token $GITHUB_TOKEN" \
+      -d '{
+        "state": "pending",
+        "context": "gitlab-ci",
+        "description": "Pipeline running",
+        "target_url": "'$CI_PIPELINE_URL'"
+      }' \
+      https://api.github.com/repos/daniel-sosna/psi-2-project/statuses/$CI_COMMIT_SHA
+
 notify_success:
   stage: notify
   needs: ["test"]
@@ -87,7 +102,7 @@ notify_success:
         "description": "Pipeline passed",
         "target_url": "'$CI_PIPELINE_URL'"
       }' \
-      https://api.github.com/repos/OWNER/REPO/statuses/$CI_COMMIT_SHA
+      https://api.github.com/repos/daniel-sosna/psi-2-project/statuses/$CI_COMMIT_SHA
   when: on_success
 
 notify_failure:
@@ -102,5 +117,5 @@ notify_failure:
         "description": "Pipeline failed",
         "target_url": "'$CI_PIPELINE_URL'"
       }' \
-      https://api.github.com/repos/OWNER/REPO/statuses/$CI_COMMIT_SHA
+      https://api.github.com/repos/daniel-sosna/psi-2-project/statuses/$CI_COMMIT_SHA
   when: on_failure
