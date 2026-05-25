@@ -26,11 +26,17 @@ public class AppDbContext : DbContext
         {
             entity.HasKey(e => e.Username); 
             entity.Property(e => e.Username).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.Email).HasMaxLength(255);
             entity.Property(e => e.PasswordHash).IsRequired();
+            entity.Property(e => e.UserType)
+                .HasConversion<string>()
+                .HasMaxLength(20)
+                .HasDefaultValue(UserType.Regular);
             entity.Property(e => e.TotalGamesPlayed).HasDefaultValue(0);
             entity.Property(e => e.BestMatchesCount).HasDefaultValue(0);
             entity.Property(e => e.AverageCompatibilityScore).HasDefaultValue(0.0);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("datetime('now')");
+            entity.HasIndex(e => e.Email).IsUnique();
         });
         
         // GameStatement configuration

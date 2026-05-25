@@ -6,6 +6,7 @@ namespace KNOTS.Services;
     public class GameRoom {
         public string RoomCode { get; set; } = string.Empty;
         public string Host { get; set; } = string.Empty;
+        public string? BusinessLogoDataUrl { get; set; }
         public List<GamePlayer> Players { get; set; } = new();
         public GameState State { get; set; } = GameState.WaitingForPlayers;
         public int MaxPlayers { get; set; } = 4;

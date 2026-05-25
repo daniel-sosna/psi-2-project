@@ -7,11 +7,32 @@ namespace KNOTS.Hubs;
 public class GameHub : Hub {
     private readonly IGameRoomService _gameRoomService;
     public GameHub(IGameRoomService gameRoomService) { _gameRoomService = gameRoomService;}
-    public async Task CreateRoom(string username) {
+    public async Task JoinGame(string username) {
+        try
+        {
+            await Clients.Caller.SendAsync("AssignPlayerId", Context.ConnectionId);
+            Console.WriteLine($"[GameHub] JoinGame success for '{username}' with connection '{Context.ConnectionId}'");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[GameHub] JoinGame failed for '{username}': {ex}");
+            throw;
+        }
+    }
+    public async Task CreateRoom(string username, string? businessLogoDataUrl = null) {
+        try
+        {
             var connectionId = Context.ConnectionId;
-            var roomCode = _gameRoomService.CreateRoom(connectionId, username);
+            var roomCode = _gameRoomService.CreateRoom(connectionId, username, businessLogoDataUrl);
             await Groups.AddToGroupAsync(connectionId, roomCode);
             await Clients.Caller.SendAsync("RoomCreated", roomCode);
+            Console.WriteLine($"[GameHub] CreateRoom success for '{username}'. Room: {roomCode}, Logo: {businessLogoDataUrl}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[GameHub] CreateRoom failed for '{username}': {ex}");
+            throw;
+        }
     }
     public async Task JoinRoom(string roomCode, string username) {
         var connectionId = Context.ConnectionId;
@@ -23,7 +44,8 @@ public class GameHub : Hub {
             if (roomInfo != null){
                 var roomData = new {
                     RoomCode = roomInfo.RoomCode,
-                    Players = roomInfo.Players.Select(p => p.Username).ToList()
+                    Players = roomInfo.Players.Select(p => p.Username).ToList(),
+                    BusinessLogoDataUrl = roomInfo.BusinessLogoDataUrl
                 };
                 await Clients.Caller.SendAsync("JoinedRoom", roomData);
                 await Clients.OthersInGroup(roomCode).SendAsync("PlayerJoinedRoom", username);

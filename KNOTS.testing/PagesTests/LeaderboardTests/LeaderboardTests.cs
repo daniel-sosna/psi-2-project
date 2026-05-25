@@ -129,7 +129,7 @@ namespace KNOTS.Tests.Integration
             await Task.Delay(400);
 
             // Assert
-            var topRanks = cut.FindAll("span.rank-1, span.rank-2, span.rank-3");
+            var topRanks = cut.FindAll(".rank-number.rank-1, .rank-number.rank-2, .rank-number.rank-3");
             Assert.Equal(3, topRanks.Count);
             
             Assert.Contains("1", topRanks[0].TextContent);
@@ -332,9 +332,9 @@ namespace KNOTS.Tests.Integration
             await Task.Delay(400);
 
             // Assert
-            _mockUserService.Verify(s => s.GetLeaderboard(10), Times.Once);
-            _mockUserService.Verify(s => s.GetTotalUsersCount(), Times.Once);
-            _mockUserService.Verify(s => s.GetUserRank("testuser"), Times.Once);
+            Assert.Equal(1, CountInvocations(nameof(InterfaceUserService.GetLeaderboard), 10));
+            Assert.Equal(1, CountInvocations(nameof(InterfaceUserService.GetTotalUsersCount)));
+            Assert.Equal(1, CountInvocations(nameof(InterfaceUserService.GetUserRank), "testuser"));
         }
 
         [Fact]
@@ -398,7 +398,16 @@ namespace KNOTS.Tests.Integration
             await Task.Delay(400);
 
             // Assert
-            _mockUserService.Verify(s => s.GetLeaderboard(10), Times.Once);
+            Assert.Equal(1, CountInvocations(nameof(InterfaceUserService.GetLeaderboard), 10));
+        }
+
+        private int CountInvocations(string methodName, params object[] arguments)
+        {
+            return _mockUserService.Invocations.Count(invocation =>
+                invocation.Method.Name == methodName &&
+                invocation.Arguments.Count == arguments.Length &&
+                invocation.Arguments.Select(argument => argument?.ToString())
+                    .SequenceEqual(arguments.Select(argument => argument?.ToString())));
         }
     }
 }

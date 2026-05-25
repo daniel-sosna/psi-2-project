@@ -8,11 +8,12 @@ public class RoomManager {
         _roomRepository = roomRepository;
         _codeGenerator = codeGenerator;
     }
-    public GameRoom CreateRoom(string hostConnectionId, string hostUsername) {
+    public GameRoom CreateRoom(string hostConnectionId, string hostUsername, string? businessLogoDataUrl = null) {
         var roomCode = _codeGenerator.Generate(_roomRepository.GetAllRoomCodes());
         var room = new GameRoom {
             RoomCode = roomCode,
             Host = hostUsername,
+            BusinessLogoDataUrl = businessLogoDataUrl,
             Players = new List<GamePlayer> {new GamePlayer(hostConnectionId, hostUsername)}
         };
         _roomRepository.AddRoom(room);

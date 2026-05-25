@@ -8,7 +8,7 @@ public class CreateRoomSendRoomUnit : GameHubTestBase {
     public async Task CreateRoomSendRoom(){
         var username = "pirmas";
         var roomCode = "room1";
-        MockGameRoomService.Setup(s => s.CreateRoom("test-connection", username)).Returns(roomCode);
+        MockGameRoomService.Setup(s => s.CreateRoom("test-connection", username, null)).Returns(roomCode);
         MockGroups.Setup(g => g.AddToGroupAsync("test-connection", roomCode, It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
         MockClientProxy.Setup(c => c.SendCoreAsync("RoomCreated", It.Is<object[]>(o => o.Length == 1 && (string)o[0] == roomCode), default)).Returns(Task.CompletedTask);
         await Hub.CreateRoom(username);

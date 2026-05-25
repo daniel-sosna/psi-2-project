@@ -4,6 +4,7 @@ using KNOTS.Services;
 using KNOTS.Services.Interfaces;
 using KNOTS.Data;
 using KNOTS.Hubs;
+using KNOTS.Models;
 using KNOTS.Services.Chat;
 using KNOTS.Services.Compability;
 using Microsoft.AspNetCore.SignalR;
@@ -50,8 +51,11 @@ using (var scope = app.Services.CreateScope())
         var tableCount = dbContext.Model.GetEntityTypes().Count();
         Console.WriteLine($"Database migrated successfully with {tableCount} tables");
 
-        var compatService = scope.ServiceProvider.GetRequiredService<InterfaceCompatibilityService>();
-        Console.WriteLine("CompatibilityService initialized successfully");
+        if (!app.Environment.IsEnvironment("Testing"))
+        {
+            var compatService = scope.ServiceProvider.GetRequiredService<InterfaceCompatibilityService>();
+            Console.WriteLine("CompatibilityService initialized successfully");
+        }
     }
     catch (Exception ex)
     {
@@ -76,4 +80,23 @@ app.UseAntiforgery();
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 app.MapHub<GameHub>("/gamehub");
 app.MapHub<ChatHub>("/chathub");
+app.MapPost("/api/auth/business/register", (BusinessRegisterRequest request, InterfaceUserService userService) =>
+{
+    var result = userService.RegisterBusinessUser(request.BusinessName, request.Email, request.Password);
+    return result.Success
+        ? Results.Ok(new BusinessAuthResponse(true, result.Message, request.BusinessName, request.Email, true))
+        : Results.BadRequest(new BusinessAuthResponse(false, result.Message, null, null, false));
+}).DisableAntiforgery();
+app.MapPost("/api/auth/business/login", (BusinessLoginRequest request, InterfaceUserService userService) =>
+{
+    var result = userService.LoginBusinessUser(request.Email, request.Password);
+    return result.Success
+        ? Results.Ok(new BusinessAuthResponse(
+            true,
+            result.Message,
+            userService.CurrentUser,
+            userService.CurrentUserEmail,
+            userService.IsCurrentUserBusiness))
+        : Results.Unauthorized();
+}).DisableAntiforgery();
 app.Run();
