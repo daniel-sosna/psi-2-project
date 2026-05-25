@@ -82,21 +82,35 @@ app.MapHub<GameHub>("/gamehub");
 app.MapHub<ChatHub>("/chathub");
 app.MapPost("/api/auth/business/register", (BusinessRegisterRequest request, InterfaceUserService userService) =>
 {
-    var result = userService.RegisterBusinessUser(request.BusinessName, request.Email, request.Password);
-    return result.Success
-        ? Results.Ok(new BusinessAuthResponse(true, result.Message, request.BusinessName, request.Email, true))
-        : Results.BadRequest(new BusinessAuthResponse(false, result.Message, null, null, false));
+    try
+    {
+        var result = userService.RegisterBusinessUser(request.BusinessName, request.Email, request.Password);
+        return result.Success
+            ? Results.Ok(new BusinessAuthResponse(true, result.Message, request.BusinessName, request.Email, true))
+            : Results.BadRequest(new BusinessAuthResponse(false, result.Message, null, null, false));
+    }
+    catch (ArgumentException ex)
+    {
+        return Results.BadRequest(new BusinessAuthResponse(false, ex.Message, null, null, false));
+    }
 }).DisableAntiforgery();
 app.MapPost("/api/auth/business/login", (BusinessLoginRequest request, InterfaceUserService userService) =>
 {
-    var result = userService.LoginBusinessUser(request.Email, request.Password);
-    return result.Success
-        ? Results.Ok(new BusinessAuthResponse(
-            true,
-            result.Message,
-            userService.CurrentUser,
-            userService.CurrentUserEmail,
-            userService.IsCurrentUserBusiness))
-        : Results.Unauthorized();
+    try
+    {
+        var result = userService.LoginBusinessUser(request.Email, request.Password);
+        return result.Success
+            ? Results.Ok(new BusinessAuthResponse(
+                true,
+                result.Message,
+                userService.CurrentUser,
+                userService.CurrentUserEmail,
+                userService.IsCurrentUserBusiness))
+            : Results.Unauthorized();
+    }
+    catch (ArgumentException ex)
+    {
+        return Results.BadRequest(new BusinessAuthResponse(false, ex.Message, null, null, false));
+    }
 }).DisableAntiforgery();
 app.Run();

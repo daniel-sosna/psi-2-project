@@ -77,4 +77,45 @@ public class BusinessAuthHttpIntegrationTests : IClassFixture<IntegrationTestApp
 
         Assert.Equal(HttpStatusCode.Unauthorized, loginResponse.StatusCode);
     }
+
+    [Fact]
+    public async Task BusinessRegistration_OverHttp_WithDuplicateEmail_ReturnsBadRequest()
+    {
+        var suffix = Guid.NewGuid().ToString("N")[..8];
+        var firstBusinessName = $"Coffee Club {suffix}";
+        var secondBusinessName = $"Bakery House {suffix}";
+        var email = $"shared-{suffix}@coffee.test";
+
+        var firstResponse = await _client.PostAsJsonAsync(
+            "/api/auth/business/register",
+            new BusinessRegisterRequest(firstBusinessName, email, "testpass"));
+
+        var secondResponse = await _client.PostAsJsonAsync(
+            "/api/auth/business/register",
+            new BusinessRegisterRequest(secondBusinessName, email, "testpass"));
+
+        Assert.Equal(HttpStatusCode.OK, firstResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, secondResponse.StatusCode);
+
+        var payload = await secondResponse.Content.ReadFromJsonAsync<BusinessAuthResponse>();
+        Assert.NotNull(payload);
+        Assert.False(payload!.Success);
+        Assert.Contains("email", payload.Message, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task BusinessRegistration_OverHttp_WithInvalidEmail_ReturnsBadRequest()
+    {
+        var suffix = Guid.NewGuid().ToString("N")[..8];
+        var response = await _client.PostAsJsonAsync(
+            "/api/auth/business/register",
+            new BusinessRegisterRequest($"Coffee Club {suffix}", $"invalid-email-{suffix}", "testpass"));
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+        var payload = await response.Content.ReadFromJsonAsync<BusinessAuthResponse>();
+        Assert.NotNull(payload);
+        Assert.False(payload!.Success);
+        Assert.Contains("valid email", payload.Message, StringComparison.OrdinalIgnoreCase);
+    }
 }

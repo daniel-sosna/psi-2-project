@@ -53,6 +53,39 @@ public class GameHubRoomLogoIntegrationTests : IClassFixture<IntegrationTestAppl
         Assert.Contains("Alice", players);
     }
 
+    [Fact]
+    public async Task CreateRoom_ThenJoinRoom_WithoutLogo_LeavesBusinessLogoEmpty()
+    {
+        _hostConnection = BuildHubConnection();
+        _guestConnection = BuildHubConnection();
+
+        var roomCreated = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var joinedRoom = new TaskCompletionSource<JsonElement>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        _hostConnection.On<string>("RoomCreated", roomCode => roomCreated.TrySetResult(roomCode));
+        _guestConnection.On<object>("JoinedRoom", roomData =>
+        {
+            var json = JsonSerializer.Serialize(roomData);
+            joinedRoom.TrySetResult(JsonSerializer.Deserialize<JsonElement>(json));
+        });
+
+        await _hostConnection.StartAsync();
+        await _guestConnection.StartAsync();
+
+        await _hostConnection.InvokeAsync("JoinGame", "Coffee Club");
+        await _guestConnection.InvokeAsync("JoinGame", "Alice");
+        await _hostConnection.InvokeAsync("CreateRoom", "Coffee Club", null);
+
+        var roomCode = await roomCreated.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        Assert.Equal(4, roomCode.Length);
+
+        await _guestConnection.InvokeAsync("JoinRoom", roomCode, "Alice");
+        var joinedPayload = await joinedRoom.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+        Assert.Equal(roomCode, GetStringProperty(joinedPayload, "RoomCode"));
+        Assert.Null(GetStringProperty(joinedPayload, "BusinessLogoDataUrl"));
+    }
+
     public Task InitializeAsync() => Task.CompletedTask;
 
     public async Task DisposeAsync()
