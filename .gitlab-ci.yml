@@ -15,9 +15,11 @@ variables:
   NUGET_PACKAGES: "$CI_PROJECT_DIR/.nuget/packages"
 
 cache:
-  key: "nuget"
+  key: "$CI_JOB_STAGE-$CI_COMMIT_REF_SLUG"
   paths:
     - .nuget/packages/
+    - '**/obj/project.assets.json'
+    - '**/obj/*.csproj.nuget.*'
 
 default:
   image: mcr.microsoft.com/dotnet/sdk:9.0
@@ -47,7 +49,6 @@ test:
   needs: ["build"]
   script:
     - dotnet test KNOTS.testing/KNOTS.testing.csproj -c "$CONFIGURATION" --no-build --collect:"XPlat Code Coverage" --results-directory TestResults --logger "trx;LogFileName=test-results.trx"
-    - ls -R .
   artifacts:
     when: always
     paths:
