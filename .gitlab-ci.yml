@@ -48,7 +48,9 @@ test:
   stage: test
   needs: ["build"]
   script:
-    - dotnet test KNOTS.testing/KNOTS.testing.csproj -c "$CONFIGURATION" --no-restore --collect:"XPlat Code Coverage" --results-directory TestResults --logger "trx;LogFileName=test-results.trx"
+    - dotnet restore KNOTS.sln
+    - dotnet test KNOTS.testing/KNOTS.testing.csproj -c "$CONFIGURATION" --collect:"XPlat Code Coverage" --results-directory TestResults --logger "trx;LogFileName=test-results.trx" --verbosity normal
+    - find . -maxdepth 5 -type f
   artifacts:
     when: always
     paths:
