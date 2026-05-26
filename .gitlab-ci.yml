@@ -40,7 +40,7 @@ build:
   stage: build
   needs: ["restore"]
   script:
-    - dotnet build KNOTS.sln -c "$CONFIGURATION"
+    - dotnet build KNOTS.sln -c "$CONFIGURATION" --no-restore
 
 # ---------- TEST ----------
 
@@ -48,7 +48,7 @@ test:
   stage: test
   needs: ["build"]
   script:
-    - dotnet test KNOTS.testing/KNOTS.testing.csproj -c "$CONFIGURATION" --no-build --collect:"XPlat Code Coverage" --results-directory TestResults --logger "trx;LogFileName=test-results.trx"
+    - dotnet test KNOTS.testing/KNOTS.testing.csproj -c "$CONFIGURATION" --no-build --no-restore --collect:"XPlat Code Coverage" --results-directory TestResults --logger "trx;LogFileName=test-results.trx"
   artifacts:
     when: always
     paths:
