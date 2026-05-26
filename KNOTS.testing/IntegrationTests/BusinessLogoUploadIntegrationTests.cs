@@ -57,6 +57,27 @@ public class BusinessLogoUploadIntegrationTests : BunitContext, IDisposable
         Assert.DoesNotContain("Selected: notes.txt", component.Markup);
     }
 
+    [Fact]
+    public async Task BusinessLogoUpload_FileTooLarge_ShowsSizeLimitInMegabytes()
+    {
+        var component = RenderBusinessGameComponent();
+        var file = new TestBrowserFile(
+            "huge-logo.png",
+            "image/png",
+            new byte[(2 * 1024 * 1024) + 1]);
+
+        await InvokeLogoUpload(component, file);
+
+        var uploadsDirectory = Path.Combine(_webRootPath, "uploads", "business-logos");
+        var savedFiles = Directory.Exists(uploadsDirectory)
+            ? Directory.GetFiles(uploadsDirectory)
+            : Array.Empty<string>();
+
+        Assert.Empty(savedFiles);
+        Assert.Equal("Error: Logo file must be 2 MB or smaller.", component.Instance.statusMessage);
+        Assert.DoesNotContain("2097152", component.Instance.statusMessage);
+    }
+
     public new void Dispose()
     {
         base.Dispose();

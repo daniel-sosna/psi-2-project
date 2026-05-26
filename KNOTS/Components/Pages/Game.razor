@@ -63,10 +63,6 @@
                         <div class="lobby-rope">🥨</div>
                         <h2 class="section-title">Game Lobby</h2>
                         <p class="welcome-text">Hello, <strong>@UserService.CurrentUser</strong>!</p>
-                        @if (!string.IsNullOrEmpty(playerId))
-                        {
-                            <p class="player-id">Your game ID: <span>@playerId</span></p>
-                        }
                     </div>
 
                     <div class="lobby-options">
@@ -1222,6 +1218,16 @@
         try
         {
             const long maxFileSize = 2 * 1024 * 1024;
+            var maxFileSizeInMb = maxFileSize / (1024d * 1024d);
+
+            if (file.Size > maxFileSize)
+            {
+                businessLogoDataUrl = null;
+                selectedBusinessLogoName = string.Empty;
+                statusMessage = $"Error: Logo file must be {maxFileSizeInMb:0.#} MB or smaller.";
+                return;
+            }
+
             var uploadsRoot = Path.Combine(WebHostEnvironment.WebRootPath, "uploads", "business-logos");
             Directory.CreateDirectory(uploadsRoot);
 

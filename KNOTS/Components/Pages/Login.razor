@@ -82,7 +82,12 @@
 
                 <div class="input-group">
                     <label for="businessEmailInput">Email</label>
-                    <input id="businessEmailInput" class="form-input" @bind="BusinessEmail" placeholder="Enter your business email"/>
+                    <input id="businessEmailInput"
+                           type="email"
+                           class="form-input"
+                           @bind="BusinessEmail"
+                           required
+                           placeholder="Enter your business email"/>
                 </div>
             }
             else
@@ -693,6 +698,12 @@
 
     private void LoginToWeb()
     {
+        if (isBusinessMode && !HasValidBusinessEmail())
+        {
+            statusMessage = "Please enter a valid email address.";
+            return;
+        }
+
         var result = isBusinessMode
             ? UserService.LoginBusinessUser(BusinessEmail, Password)
             : UserService.LoginUser(Username, Password);
@@ -707,6 +718,12 @@
 
     private void RegisterToWeb()
     {
+        if (isBusinessMode && !HasValidBusinessEmail())
+        {
+            statusMessage = "Please enter a valid email address.";
+            return;
+        }
+
         var result = isBusinessMode
             ? UserService.RegisterBusinessUser(BusinessName, BusinessEmail, Password)
             : UserService.RegisterUser(Username, Password);
@@ -739,5 +756,23 @@
     {
         UserService.LogoutUser();
         statusMessage = "You have logged out.";
+    }
+
+    private bool HasValidBusinessEmail()
+    {
+        if (string.IsNullOrWhiteSpace(BusinessEmail))
+        {
+            return false;
+        }
+
+        try
+        {
+            var address = new System.Net.Mail.MailAddress(BusinessEmail.Trim());
+            return address.Address.Equals(BusinessEmail.Trim(), StringComparison.OrdinalIgnoreCase);
+        }
+        catch
+        {
+            return false;
+        }
     }
 }
