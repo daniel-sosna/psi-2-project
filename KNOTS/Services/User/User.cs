@@ -1,9 +1,12 @@
 using System;
+using KNOTS.Models;
 
 namespace KNOTS.Services;
 public class User : IComparable<User>, IEquatable<User>
 {
     public string Username { get; set; } = string.Empty;
+    public string? Email { get; set; }
+    public UserType UserType { get; set; } = UserType.Regular;
     public DateTime CreatedAt { get; set; } = DateTime.Now;
     public string PasswordHash { get; set; } = string.Empty;
     public int TotalGamesPlayed { get; set; }
@@ -36,6 +39,8 @@ public class User : IComparable<User>, IEquatable<User>
         return AverageCompatibilityScore.Equals(other.AverageCompatibilityScore)
                && BestMatchesCount == other.BestMatchesCount
                && TotalGamesPlayed == other.TotalGamesPlayed
+               && UserType == other.UserType
+               && string.Equals(Email, other.Email, StringComparison.OrdinalIgnoreCase)
                && string.Equals(Username, other.Username, StringComparison.OrdinalIgnoreCase);
     }
 
@@ -47,6 +52,8 @@ public class User : IComparable<User>, IEquatable<User>
             AverageCompatibilityScore,
             BestMatchesCount,
             TotalGamesPlayed,
+            UserType,
+            Email?.ToLowerInvariant(),
             Username.ToLowerInvariant());
     }
 }

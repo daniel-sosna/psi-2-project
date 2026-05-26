@@ -1,8 +1,5 @@
 ﻿using Bunit;
 using KNOTS.Components.Pages;
-using Microsoft.JSInterop;
-using Microsoft.Extensions.DependencyInjection;
-using Moq;
 
 public class Game_JoinRoomTests : GameTestBase
 {
@@ -11,10 +8,7 @@ public class Game_JoinRoomTests : GameTestBase
     {
         // Arrange
         var (component, _, _, _, _) = SetupGameComponent(currentUser: "Bob");
-
-        var mockJSRuntime = Services.GetRequiredService<IJSRuntime>() as Mock<IJSRuntime>;
-        mockJSRuntime?.Setup(js => js.InvokeVoidAsync("joinRoom", It.IsAny<object[]>()))
-            .Returns(ValueTask.CompletedTask);
+        JSInterop.SetupVoid("joinRoom", _ => true);
 
         // Act
         component.Find(".room-code-input").Change("1234");

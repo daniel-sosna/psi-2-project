@@ -126,10 +126,13 @@ namespace KNOTS.Tests.Integration
 
             // Act
             var cut = Render<Leaderboard>();
-            await Task.Delay(400);
+            cut.WaitForState(() => cut.FindAll("tbody tr").Count == 4);
 
             // Assert
-            var topRanks = cut.FindAll("span.rank-1, span.rank-2, span.rank-3");
+            var topRanks = cut.FindAll(".rank-number").Where(rank =>
+                rank.ClassList.Contains("rank-1") ||
+                rank.ClassList.Contains("rank-2") ||
+                rank.ClassList.Contains("rank-3")).ToList();
             Assert.Equal(3, topRanks.Count);
             
             Assert.Contains("1", topRanks[0].TextContent);
@@ -156,7 +159,7 @@ namespace KNOTS.Tests.Integration
 
             // Act
             var cut = Render<Leaderboard>();
-            await Task.Delay(400);
+            cut.WaitForState(() => cut.FindAll("tbody tr").Count == 2);
 
             // Assert
             var currentUserRow = cut.Find(".current-user-row");
@@ -265,7 +268,7 @@ namespace KNOTS.Tests.Integration
 
             // Act
             var cut = Render<Leaderboard>();
-            await Task.Delay(400);
+            cut.WaitForState(() => cut.FindAll("tbody td").Count >= 6);
 
             // Assert
             var cells = cut.FindAll("tbody td");
@@ -332,9 +335,9 @@ namespace KNOTS.Tests.Integration
             await Task.Delay(400);
 
             // Assert
-            _mockUserService.Verify(s => s.GetLeaderboard(10), Times.Once);
-            _mockUserService.Verify(s => s.GetTotalUsersCount(), Times.Once);
-            _mockUserService.Verify(s => s.GetUserRank("testuser"), Times.Once);
+            Assert.Equal(1, CountInvocations(nameof(InterfaceUserService.GetLeaderboard), 10));
+            Assert.Equal(1, CountInvocations(nameof(InterfaceUserService.GetTotalUsersCount)));
+            Assert.Equal(1, CountInvocations(nameof(InterfaceUserService.GetUserRank), "testuser"));
         }
 
         [Fact]
@@ -377,7 +380,7 @@ namespace KNOTS.Tests.Integration
 
             // Act
             var cut = Render<Leaderboard>();
-            await Task.Delay(400);
+            cut.WaitForState(() => cut.FindAll(".no-data-card").Count == 1);
 
             // Assert - Should display no data card instead of crashing
             var noDataCard = cut.Find(".no-data-card");
@@ -398,7 +401,16 @@ namespace KNOTS.Tests.Integration
             await Task.Delay(400);
 
             // Assert
-            _mockUserService.Verify(s => s.GetLeaderboard(10), Times.Once);
+            Assert.Equal(1, CountInvocations(nameof(InterfaceUserService.GetLeaderboard), 10));
+        }
+
+        private int CountInvocations(string methodName, params object[] arguments)
+        {
+            return _mockUserService.Invocations.Count(invocation =>
+                invocation.Method.Name == methodName &&
+                invocation.Arguments.Count == arguments.Length &&
+                invocation.Arguments.Select(argument => argument?.ToString())
+                    .SequenceEqual(arguments.Select(argument => argument?.ToString())));
         }
     }
 }

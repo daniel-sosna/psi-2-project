@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
 using Moq;
 using KNOTS.Components.Pages;
+using System.Text.Json;
 
 public class Game_CreateRoomTests : GameTestBase
 {
@@ -11,16 +12,16 @@ public class Game_CreateRoomTests : GameTestBase
     {
         // Arrange
         var (component, _, _, _, _) = SetupGameComponent();
-
-        var mockJSRuntime = Services.GetRequiredService<IJSRuntime>() as Mock<IJSRuntime>;
-        mockJSRuntime?. Setup(js => js.InvokeVoidAsync("createRoom", It.IsAny<object[]>()))
-            .Returns(ValueTask.CompletedTask);
+        JSInterop
+            .Setup<JsonElement>("createRoom", _ => true)
+            .SetResult(JsonSerializer.Deserialize<JsonElement>("{\"success\":true,\"errorMessage\":\"\"}"));
 
         // Act
         var button = component.Find(".btn-create");
         button.Click();
 
         // Assert
-        Assert.Contains("Creating room", component. Markup);
+        component.WaitForAssertion(() =>
+            Assert.Contains("Creating room with topics", component.Markup));
     }
 }

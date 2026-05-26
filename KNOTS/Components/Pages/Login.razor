@@ -64,14 +64,49 @@
                 </svg>
             </div>
 
-            <div class="input-group">
-                <label for="usernameInput">Username</label>
-                <input id="usernameInput" class="form-input" @bind="Username" placeholder="Enter your username"/>
+            <div class="account-type-toggle">
+                <button class="account-type-btn @(isBusinessMode ? "" : "active")" @onclick='() => SwitchMode(false)'>
+                    Regular User
+                </button>
+                <button class="account-type-btn @(isBusinessMode ? "active" : "")" @onclick='() => SwitchMode(true)'>
+                    Business User
+                </button>
             </div>
+
+            @if (isBusinessMode)
+            {
+                <div class="input-group">
+                    <label for="businessNameInput">Business Name</label>
+                    <input id="businessNameInput" class="form-input" @bind="BusinessName" placeholder="Enter your business name"/>
+                </div>
+
+                <div class="input-group">
+                    <label for="businessEmailInput">Email</label>
+                    <input id="businessEmailInput"
+                           type="email"
+                           class="form-input"
+                           @bind="BusinessEmail"
+                           required
+                           placeholder="Enter your business email"/>
+                </div>
+            }
+            else
+            {
+                <div class="input-group">
+                    <label for="usernameInput">Username</label>
+                    <input id="usernameInput" class="form-input" @bind="Username" placeholder="Enter your username"/>
+                </div>
+            }
 
             <div class="input-group">
                 <label for="passwordInput">Password</label>
                 <input id="passwordInput" type="password" class="form-input" @bind="Password" placeholder="Enter your password"/>
+            </div>
+
+            <div class="form-helper-text">
+                @(isBusinessMode
+                    ? "Business users log in with email and can brand their rooms with a logo."
+                    : "Regular users log in with a username and password.")
             </div>
 
             <div class="button-group">
@@ -250,6 +285,38 @@
     @@keyframes particleFloat {
         0% { transform: translateY(0); }
         100% { transform: translateY(-20px); }
+    }
+
+    .account-type-toggle {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .account-type-btn {
+        border: 2px solid rgba(189, 135, 248, 0.25);
+        background: rgba(255, 255, 255, 0.7);
+        color: #5d4d7a;
+        border-radius: 14px;
+        padding: 0.9rem 1rem;
+        font-weight: 700;
+        transition: all 0.25s ease;
+    }
+
+    .account-type-btn.active {
+        background: linear-gradient(135deg, #f888e9 0%, #bd87f8 100%);
+        color: white;
+        box-shadow: 0 8px 18px rgba(189, 135, 248, 0.28);
+        border-color: transparent;
+    }
+
+    .form-helper-text {
+        text-align: center;
+        color: #6d6690;
+        font-size: 0.95rem;
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
     }
 
     .mouse-glow {
@@ -619,7 +686,10 @@
 </style>
 
 @code {
+    private bool isBusinessMode;
     private string Username = string.Empty;
+    private string BusinessName = string.Empty;
+    private string BusinessEmail = string.Empty;
     private string Password = string.Empty;
     private string statusMessage = string.Empty;
 
@@ -628,7 +698,16 @@
 
     private void LoginToWeb()
     {
-        var result = UserService.LoginUser(Username, Password);
+        if (isBusinessMode && !HasValidBusinessEmail())
+        {
+            statusMessage = "Please enter a valid email address.";
+            return;
+        }
+
+        var result = isBusinessMode
+            ? UserService.LoginBusinessUser(BusinessEmail, Password)
+            : UserService.LoginUser(Username, Password);
+
         statusMessage = result.Message;
 
         if (result.Success)
@@ -639,19 +718,61 @@
 
     private void RegisterToWeb()
     {
-        var result = UserService.RegisterUser(Username, Password);
+        if (isBusinessMode && !HasValidBusinessEmail())
+        {
+            statusMessage = "Please enter a valid email address.";
+            return;
+        }
+
+        var result = isBusinessMode
+            ? UserService.RegisterBusinessUser(BusinessName, BusinessEmail, Password)
+            : UserService.RegisterUser(Username, Password);
+
         statusMessage = result.Message;
 
         if (result.Success)
         {
-            UserService.LoginUser(Username, Password);
+            if (isBusinessMode)
+            {
+                UserService.LoginBusinessUser(BusinessEmail, Password);
+            }
+            else
+            {
+                UserService.LoginUser(Username, Password);
+            }
+
             NavigationManager.NavigateTo("/Home");
         }
+    }
+
+    private void SwitchMode(bool businessMode)
+    {
+        isBusinessMode = businessMode;
+        statusMessage = string.Empty;
+        Password = string.Empty;
     }
 
     private void Logout()
     {
         UserService.LogoutUser();
         statusMessage = "You have logged out.";
+    }
+
+    private bool HasValidBusinessEmail()
+    {
+        if (string.IsNullOrWhiteSpace(BusinessEmail))
+        {
+            return false;
+        }
+
+        try
+        {
+            var address = new System.Net.Mail.MailAddress(BusinessEmail.Trim());
+            return address.Address.Equals(BusinessEmail.Trim(), StringComparison.OrdinalIgnoreCase);
+        }
+        catch
+        {
+            return false;
+        }
     }
 }

@@ -9,6 +9,7 @@
     let currentRoom = null;
     let currentInGameNickname = null; // raw display name (not normalized)
     let lastKnownChatNormalized = null; // server normalized username (for verification)
+    let lastGameError = null;
 
     // Expose for Blazor to set the component instance for callbacks
     function setBlazorGameComponent(component) {
@@ -29,6 +30,7 @@
     // ---------------- Game connection ----------------
     async function initializeGameConnection() {
         try {
+            lastGameError = null;
             if (gameConnection) {
                 if (gameConnection.state === signalR.HubConnectionState.Disconnected) {
                     console.warn("[client] Game connection existed but was disconnected — restarting");
@@ -51,6 +53,7 @@
             return true;
         } catch (err) {
             console.error("[client] SignalR game connection error:", err);
+            lastGameError = err?.message || err?.toString?.() || "SignalR game connection error.";
             return false;
         }
     }
@@ -98,7 +101,8 @@
             if (window.blazorGameComponent) {
                 const normalizedRoomInfo = {
                     RoomCode: currentRoom || "",
-                    Players: roomInfo?.players || roomInfo?.Players || []
+                    Players: roomInfo?.players || roomInfo?.Players || [],
+                    BusinessLogoDataUrl: roomInfo?.businessLogoDataUrl || roomInfo?.BusinessLogoDataUrl || null
                 };
                 window.blazorGameComponent.invokeMethodAsync('OnJoinedRoom', JSON.stringify(normalizedRoomInfo)).catch(e => console.error(e));
             }
@@ -134,6 +138,7 @@
 
         gameConnection.onclose(function (err) {
             console.warn("[client] GameHub connection closed", err);
+            lastGameError = err?.message || err?.toString?.() || "Game connection closed.";
         });
     }
 
@@ -141,28 +146,37 @@
     async function joinGame(username) {
         if (!gameConnection) {
             console.error("[client] Game connection not established");
+            lastGameError = "Game connection not established.";
             return false;
         }
         try {
+            lastGameError = null;
             await gameConnection.invoke("JoinGame", username);
             return true;
         } catch (err) {
             console.error("[client] Error joining game:", err);
+            lastGameError = err?.message || err?.toString?.() || "Error joining game.";
             return false;
         }
     }
 
-    async function createRoom(username) {
+    async function createRoom(username, businessLogoDataUrl) {
         if (!gameConnection || gameConnection.state !== signalR.HubConnectionState.Connected) {
             console.error("[client] Game connection not established");
-            return false;
+            lastGameError = "Game connection not established.";
+            return { success: false, errorMessage: "Game connection not established." };
         }
         try {
-            await gameConnection.invoke("CreateRoom", username);
-            return true;
+            lastGameError = null;
+            await gameConnection.invoke("CreateRoom", username, businessLogoDataUrl || null);
+            return { success: true, errorMessage: "" };
         } catch (err) {
             console.error("[client] Error creating room:", err);
-            return false;
+            lastGameError = err?.message || err?.toString?.() || "Unable to create room.";
+            return {
+                success: false,
+                errorMessage: lastGameError
+            };
         }
     }
 
@@ -207,6 +221,10 @@
             currentPlayerId = null;
             currentInGameNickname = null;
         }
+    }
+
+    function getLastGameError() {
+        return lastGameError;
     }
 
     // ---------------- Chat connection ----------------
@@ -403,6 +421,7 @@
     global.joinRoom = joinRoom;
     global.sendGameAction = sendGameAction;
     global.disconnectFromGame = disconnectFromGame;
+    global.getLastGameError = getLastGameError;
     global.sendChatMessage = sendChatMessage;
     global.whoAmI = whoAmI;
     global.debugConnectionInfo = debugConnectionInfo;
